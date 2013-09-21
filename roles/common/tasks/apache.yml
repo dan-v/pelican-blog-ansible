@@ -1,8 +1,14 @@
 - name: Install apache2
   apt: pkg=apache2 state=installed
 
+- name: Start apache2
+  service: name=apache2 state=started
+
+- name: Enable apache2 on boot
+  service: name=apache2 enabled=yes
+
 - name: Disable default Apache site
-  command: a2dissite default removes=/etc/apache2/sites-enabled/default
+  command: a2dissite default removes=/etc/apache2/sites-enabled/000-default
   notify: restart apache
 
 - name: Enable Apache SSL module
