@@ -1,4 +1,4 @@
-* Simple ansible playbook for deploying my blog
+* Simple ansible playbook for deploying my blog on Debian 7.x
 
 <pre>
 ssh-keygen
