@@ -1,0 +1,36 @@
+#- name: Install dependencies for apache2
+#  apt: pkg=$item state=installed
+#  with_items:
+#    - libssl-dev
+#
+#- name: Download apache2 source
+#  get_url: url=http://mirrors.ibiblio.org/apache/httpd/httpd-${apache_version}.tar.gz dest=/root/httpd-${apache_version}.tar.gz
+#
+#- name: Decompress apache2 source
+#  command: tar xzf /root/httpd-${apache_version}.tar.gz chdir=/root creates=/root/httpd-${apache_version}/COPYING
+#
+#- name: Configure apache2 for local build
+#  command: ./configure chdir=/root/httpd-${apache_version} creates=/root/httpd-${apache_version}/Makefile
+#
+#- name: Build and install apache
+#  command: make all install clean chdir=/root/httpd-${apache_version} creates=/usr/local/apache2/
+
+- name: Create directory for blog 
+  file: state=directory path=/var/www/${blog_domain} group=www-data owner=www-data
+
+- name: Git clone blog
+  git: repo={{ blog_repository }} dest=/var/www/${blog_domain}
+
+- name: Install pelican
+  command: pip install pelican
+
+- name: Make blog
+  command: make html chdir=/var/www/${blog_domain}
+
+- name: Configure the Apache HTTP server for the blog
+  template: src=etc_apache2_sites-available_blog.j2 dest=/etc/apache2/sites-available/${blog_domain} group=www-data owner=www-data
+  notify: restart apache
+
+- name: Enable blog site
+  command: a2ensite ${blog_domain} creates=/etc/apache2/sites-enabled/${blog_domain}
+  notify: restart apache

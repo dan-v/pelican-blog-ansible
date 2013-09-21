@@ -1,0 +1,37 @@
+---
+# Defines tasks applicable across all machines in the infrastructure.
+
+- name: Update apt cache
+  apt: update_cache=yes
+
+- name: Upgrade all safe packages
+  apt: upgrade=safe
+
+- name: Install necessities and nice-to-haves
+  apt: pkg=$item state=installed
+  with_items:
+    - sudo
+    - vim
+    - htop
+    - iftop
+    - git
+    - screen
+    - build-essential
+    - update-notifier-common
+    - debian-goodies
+
+- name: Install ntp
+  apt: pkg=ntp state=installed
+
+- name: Configure ntp
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf
+  notify:
+    - restart ntp
+
+- name: Ensure ntpd is running and enabled
+  service: name=ntp state=started enabled=yes
+
+- include: ssl.yml tags=ssl
+- include: apache.yml tags=apache
+- include: ferm.yml tags=ferm
+- include: security.yml tags=security
