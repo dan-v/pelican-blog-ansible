@@ -1,3 +1,5 @@
+# This repository is no longer maintained.
+
 * Simple ansible playbook for deploying my blog on Debian 7.x
 
 <pre>
